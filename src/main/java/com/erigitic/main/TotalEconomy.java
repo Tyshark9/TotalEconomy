@@ -4,6 +4,7 @@ import com.erigitic.commands.*;
 import com.erigitic.config.AccountManager;
 import com.erigitic.config.TECurrency;
 import com.erigitic.jobs.TEJobs;
+import com.erigitic.shops.AdminShop;
 import com.erigitic.shops.ShopKeeper;
 import com.google.inject.Inject;
 import ninja.leaping.configurate.ConfigurationNode;
@@ -59,13 +60,15 @@ public class TotalEconomy {
     private AccountManager accountManager;
     private TEJobs teJobs;
     private ShopKeeper shopKeeper;
+    private AdminShop adminShop;
 
     private boolean loadJobs = true;
     private boolean loadSalary = true;
     private boolean jobPermissions = false;
 
-    private boolean loadShopKeeper = true;
+    private boolean loadShopKeeper = false;
     private boolean loadMoneyCap = false;
+    private boolean loadAdminShop = false;
 
     private BigDecimal moneyCap;
 
@@ -87,6 +90,7 @@ public class TotalEconomy {
 
         loadShopKeeper = config.getNode("features", "shopkeeper").getBoolean();
         loadMoneyCap = config.getNode("features", "moneycap", "enable").getBoolean();
+        loadAdminShop = config.getNode("features", "adminshop", "enable").getBoolean();
 
         accountManager = new AccountManager(this);
 
@@ -104,6 +108,10 @@ public class TotalEconomy {
         if (loadMoneyCap == true) {
             moneyCap = BigDecimal.valueOf(config.getNode("features", "moneycap", "amount").getFloat())
                     .setScale(2, BigDecimal.ROUND_DOWN);
+        }
+
+        if (loadAdminShop == true) {
+            adminShop = new AdminShop(this);
         }
     }
 
@@ -315,7 +323,11 @@ public class TotalEconomy {
         return loadMoneyCap;
     }
 
+    public boolean isLoadAdminShop() { return loadAdminShop; }
+
     public BigDecimal getMoneyCap() {
         return moneyCap.setScale(2, BigDecimal.ROUND_DOWN);
     }
+
+    public AdminShop getAdminShop() { return adminShop; }
 }
